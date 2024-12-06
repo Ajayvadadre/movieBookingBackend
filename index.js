@@ -6,9 +6,9 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use("/home",routes)
-// app.get("/", (req, res) => {
-//   res.send("Hi");
-// });
+app.get("/", (req, res) => {
+  res.send("Hi");
+});
 
 const start = async() => {
   try {
