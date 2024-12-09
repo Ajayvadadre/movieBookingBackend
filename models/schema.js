@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema({
     genre: { type: String, required: true },
     date_created: { type: String, required: true },
     director: { type: String, required: true },
-    image: { type:String, required: true }
+    image: { type:String, required: true },
+    seats: { type:Array},
+    price: { type:String}
 })
 
 const userData = mongoose.model("movieBooking", userSchema)

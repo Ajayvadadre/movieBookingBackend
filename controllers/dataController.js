@@ -1,4 +1,5 @@
 const dataModel = require("../models/schema");
+const seatModel = require("../models/seatSchema");
 
 const getData = async (req, res) => {
   try {
@@ -40,9 +41,9 @@ const updateData = async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
-    console.log(updatedData);
+    // console.log(updatedData);
     const updatedUser = await dataModel.findByIdAndUpdate(id, updatedData);
-    console.log(updatedUser);
+    // console.log(updatedUser);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.log("this is the error" + error);
@@ -51,13 +52,115 @@ const updateData = async (req, res) => {
 const deleteData = async (req, res) => {
   try {
     let id = req.params.id;
-    console.log(id)
+    console.log(id);
     console.log("Data deleted of " + id);
     const deleteUser = await dataModel.findByIdAndDelete(id);
-    res.status(200).json({"error": deleteUser });
+    res.status(200).json({ error: deleteUser });
   } catch (error) {
     console.log("this is the error" + error);
   }
 };
 
-module.exports = { getData, createData, getDataById, updateData, deleteData };
+const setSeatData = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const data = req.body.seats;
+    const seatData = { _id: id, seatsById: data };
+    // console.log(id);
+    // console.log(data);
+    // console.log(seatData)
+
+    try {
+      const saveSeatsById = await seatModel.findOneAndUpdate(
+        { _id: id },
+        { $set: seatData },
+        { upsert: true, new: true }
+      );
+      // console.log(seatData)
+      // console.log("successfully saved data of :" + saveSeatsById);
+    } catch (error) {
+      console.log("this is the seat error:  " + error);
+    }
+
+    const saveSeats = await dataModel.findById(id);
+    const existingSeats = saveSeats.seats;
+    const newSeats = existingSeats.concat(data);
+    saveSeats.seats = newSeats;
+    await saveSeats.save();
+    res.status(200).json(saveSeats.seats);
+  } catch (error) {
+    console.log("this is error" + error.message);
+  }
+};
+
+const getSeatData = async (req, res) => {
+  const id = req.params.id;
+  const data = await dataModel.findById(id);
+  console.log("getSeatData");
+  res.json({ bookedSeats: data.seats });
+};
+
+const setPrice = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const price = req.body.price;
+    // console.log(id);
+    // console.log(price);
+    const savePrice = await dataModel.findByIdAndUpdate(
+      id,
+      {
+        $set: { price: price },
+      },
+      { new: true }
+    );
+    res.status(200).json(savePrice);
+  } catch (error) {
+    console.log("this is error: " + error.message);
+  }
+};
+
+const deleteSeatData = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const seatIds = req.body.seats;
+    console.log(id);
+    console.log(seatIds);
+    // const update = await dataModel.findByIdAndUpdate(id, {
+    //   $pull: { seats: { $in: seatIds } }
+    // }, { new: true });
+    const update = await dataModel.findByIdAndDelete(
+      id,
+      {
+        $pull: { seats: { $in: seatIds } },
+      },
+      { new: true }
+    );
+    res.status(200).json(update);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error deleting seats" });
+  }
+};
+const getSeatDataById = async (req, res) => {
+  try {
+    console.log("getSeatDataById");
+    const id = req.params.id;
+    const data = await seatModel.findById(id);
+    console.log("seats by id " + data);
+    res.json({ bookedSeatsByID: data.seatsById });
+  } catch (error) {
+    console.log("This is IndividualSeat error : " + error);
+  }
+};
+
+module.exports = {
+  getData,
+  createData,
+  getDataById,
+  updateData,
+  deleteData,
+  setSeatData,
+  getSeatData,
+  setPrice,
+  getSeatDataById,
+};
