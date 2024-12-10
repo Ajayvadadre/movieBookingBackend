@@ -1,5 +1,6 @@
 const dataModel = require("../models/schema");
 const seatModel = require("../models/seatSchema");
+const authModel = require("../models/authSchema");
 
 const getData = async (req, res) => {
   try {
@@ -153,6 +154,32 @@ const getSeatDataById = async (req, res) => {
   }
 };
 
+const saveUser = async (req, res) => {
+  try {
+    console.log(req.body);
+    const payload = req.body;
+    const userData = new authModel(payload);
+    const saveUser = await userData.save();
+    console.log(saveUser);
+    res.status(201).json({ saveUser });
+  } catch (error) {
+    console.log("Auth error:  " + error);
+  }
+};
+
+const authentication = async (req, res) => {
+  const { name, password } = req.body;
+  const userData = await authModel.findOne({ name });
+  if (!userData) {
+    return res.status(401).send({ error: "User not found" });
+  }
+  const isValidPassword = await bcrypt.compare(password, userData.hashPassword);
+  if (!isValidPassword) {
+    return res.status(401).send({ error: "Invalid password" });
+  }
+  console.log(userData);
+  return res.status(200).send(true);
+};
 module.exports = {
   getData,
   createData,
@@ -163,4 +190,6 @@ module.exports = {
   getSeatData,
   setPrice,
   getSeatDataById,
+  saveUser,
+  authentication,
 };

@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     date_created: { type: String, required: true },
     director: { type: String, required: true },
     image: { type:String, required: true },
+    description: { type:String, required: true },
     seats: { type:Array},
     price: { type:String}
 })
