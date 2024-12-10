@@ -4,7 +4,7 @@ const router = express.Router()
 
 router.route("/").get(getData)
 router.route("/getDataById/:id").get(getDataById)
-router.route("/authentication/:id").get(authentication)
+router.route("/authentication").post(authentication)
 router.route("/createData").post(createData)
 router.route("/update/:id").post(updateData)
 router.route("/delete/:id").delete(deleteData)
