@@ -1,11 +1,12 @@
 const dataModel = require("../models/schema");
 const seatModel = require("../models/seatSchema");
 const authModel = require("../models/authSchema");
+const logSchema = require("../models/logSchema");
 const bcrypt = require("bcrypt");
 
 const getData = async (req, res) => {
   try {
-    console.log(req, res);
+    // console.log(req, res);
     const data = await dataModel.find();
     res.status(200).json(data);
   } catch (error) {
@@ -15,7 +16,7 @@ const getData = async (req, res) => {
 
 const createData = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const payload = req.body;
     const userData = new dataModel(payload);
     const saveUser = await userData.save();
@@ -30,7 +31,7 @@ const createData = async (req, res) => {
 const getDataById = async (req, res) => {
   try {
     let id = req.params.id;
-    console.log(id);
+    // console.log(id);
     const data = await dataModel.findById(id);
     res.status(200).json(data);
     console.log(data);
@@ -169,9 +170,10 @@ const saveUser = async (req, res) => {
 };
 
 const authentication = async (req, res) => {
-  const { name, password } = req.body;
-  console.log(req.body);
+  const { _id, name, password, loginTime } = req.body;
+  // console.log(req.body);
   const userData = await authModel.findOne({ name });
+
   if (!userData) {
     // return res.status(401).send({ error: "User not found" });
     console.log("No user");
@@ -184,11 +186,27 @@ const authentication = async (req, res) => {
   console.log(userData);
   if (password == userData.password) {
     console.log("successfull password");
+    // console.log(LogData);
     return res.status(200).send(true);
   }
 };
 
+const saveLogData = async (req, res) => {
+  try {
+    const {name, password, loginTime, logOutTime} = req.body;
+    LogData = { name, password, loginTime,logOutTime };
+    const logData = new logSchema(LogData);
+    const saveLogData = await logData.save();
+    console.log(saveLogData);
+    return res.status(200).send(saveLogData);
+  } catch (error) {
+    res.status(401).send({ error: "invalid logout" });
+    console.log("Log error: " + error);
+  }
+};
+
 module.exports = {
+  saveLogData,
   getData,
   createData,
   getDataById,
