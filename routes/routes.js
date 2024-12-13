@@ -1,12 +1,15 @@
 const express = require("express")
-const {getData,createData,getDataById,updateData,deleteData,setSeatData,getSeatData,setPrice,getSeatDataById,saveUser,authentication,saveLogData} = require("../controllers/dataController")
+const {getData,createData,getDataById,updateData,deleteData,setSeatData,getSeatData,setPrice,getSeatDataById,saveUser,authentication,saveLogData,updateLogData} = require("../controllers/dataController")
+const {getLogData}= require('../controllers/logController')
 const router = express.Router()
 
 router.route("/").get(getData)
+router.route("/getLogData").get(getLogData)
 router.route("/getDataById/:id").get(getDataById)
 router.route("/authentication").post(authentication)
 router.route("/createData").post(createData)
 router.route("/update/:id").post(updateData)
+router.route("/updateLogData").post(updateLogData)
 
 router.route("/addLogTime").post(saveLogData)
     

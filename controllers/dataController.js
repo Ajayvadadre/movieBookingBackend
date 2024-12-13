@@ -158,11 +158,11 @@ const getSeatDataById = async (req, res) => {
 
 const saveUser = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const payload = req.body;
     const userData = new authModel(payload);
     const saveUser = await userData.save();
-    console.log(saveUser);
+    // console.log(saveUser);
     res.status(201).json({ saveUser });
   } catch (error) {
     console.log("Auth error:  " + error);
@@ -193,11 +193,11 @@ const authentication = async (req, res) => {
 
 const saveLogData = async (req, res) => {
   try {
-    const {name, password, loginTime, logOutTime} = req.body;
-    LogData = { name, password, loginTime,logOutTime };
+    const { name, password, loginTime, logOutTime } = req.body;
+    LogData = { name, password, loginTime, logOutTime };
     const logData = new logSchema(LogData);
     const saveLogData = await logData.save();
-    console.log(saveLogData);
+    console.log("This is save log data : "+saveLogData);
     return res.status(200).send(saveLogData);
   } catch (error) {
     res.status(401).send({ error: "invalid logout" });
@@ -205,7 +205,25 @@ const saveLogData = async (req, res) => {
   }
 };
 
+const updateLogData = async (req, res) => {
+  try {
+    const { id, OutTime } = req.body;
+    // console.log(OutTime)
+    const update = {$set: {logOutTime: OutTime}};
+    console.log(update);
+    // const filter = {name};
+    // const options = { new: true };
+    const updateData = await logSchema.findByIdAndUpdate(id, update);
+    console.log("This is logout Data :" + updateData);
+    return res.status(200).send(updateData);
+  } catch (error) {
+    console.log("Update log data error:" + error);
+    return res.status(401).send("Inalid logoutdata");
+  }
+};
+
 module.exports = {
+  updateLogData,
   saveLogData,
   getData,
   createData,
